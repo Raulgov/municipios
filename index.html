@@ -11,7 +11,7 @@
   --bg:#13100e;--surface:#1c1713;--surface2:#251f19;--surface3:#2e2620;
   --accent:#e05c3a;--green:#4dc98a;--red:#e05c3a;--blue:#5aafea;
   --text:#ede8e0;--muted:#8a7f74;--border:rgba(180,140,100,0.14);
-  --map-empty:#161210;--map-border:#2a2018;
+  --map-empty:#2a3f5f;--map-border:#1a2a42;
   --font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
 }
 html,body{height:100%;overflow:hidden}
@@ -51,12 +51,12 @@ header{
 
 /* ── MAP ── */
 .map-wrap{
-  flex:1;position:relative;overflow:hidden;background:var(--bg);
+  flex:1;position:relative;overflow:hidden;background:#0d1e35;
 }
 #map-svg{width:100%;height:100%;display:block}
 
 .muni-path{
-  fill:var(--map-empty);stroke:var(--map-border);stroke-width:.25;
+  fill:var(--map-empty);stroke:#0f1d30;stroke-width:.3;
   transition:fill .3s ease;
 }
 .muni-path.found{stroke-width:.3}
@@ -194,6 +194,53 @@ header{
 .pt{position:fixed;pointer-events:none;font-size:1.3rem;
   animation:ptAnim .9s ease forwards;z-index:500}
 @keyframes ptAnim{0%{opacity:1;transform:scale(1) translateY(0)}100%{opacity:0;transform:scale(2) translateY(-50px)}}
+
+/* ── Filtro provincia/CCAA ── */
+.filter-wrap{
+  position:absolute;top:10px;left:10px;z-index:15;
+  display:flex;flex-direction:column;gap:4px;
+}
+.filter-btn{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:var(--mono);font-size:.62rem;
+  padding:5px 10px;border-radius:2px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  transition:all .15s;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{border-color:var(--accent);background:rgba(224,92,58,.12);color:var(--accent)}
+.filter-btn .fb-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:none}
+.filter-btn.active .fb-dot{display:block}
+.filter-panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:2px;padding:10px;min-width:220px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+  display:none;max-height:65vh;overflow-y:auto;
+}
+.filter-panel.open{display:block}
+.filter-panel::-webkit-scrollbar{width:3px}
+.filter-panel::-webkit-scrollbar-thumb{background:var(--border)}
+.fp-title{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--muted);font-family:var(--mono);margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center}
+.fp-clear{font-size:.58rem;color:var(--accent);cursor:pointer;text-decoration:underline}
+.fp-section-title{font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-family:var(--mono);margin:8px 0 4px;padding-bottom:3px;
+  border-bottom:1px solid var(--border)}
+.fp-item{
+  display:flex;align-items:center;gap:7px;padding:4px 2px;
+  cursor:pointer;transition:background .1s;font-size:.75rem;
+}
+.fp-item:hover{background:var(--surface2)}
+.fp-item input[type=checkbox]{
+  accent-color:var(--accent);width:13px;height:13px;cursor:pointer;flex-shrink:0;
+}
+.fp-item .fp-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-item .fp-pct{font-family:var(--mono);font-size:.6rem;color:var(--muted);flex-shrink:0;min-width:28px;text-align:right}
+.fp-bar{height:3px;background:var(--surface3);margin-top:1px;margin-bottom:3px;overflow:hidden}
+.fp-bar-fill{height:100%;background:var(--green);transition:width .3s}
+.fp-bar-fill.partial{background:var(--accent)}
 </style>
 </head>
 <body>
@@ -238,6 +285,26 @@ header{
       <svg id="can-svg" xmlns="http://www.w3.org/2000/svg" width="200" height="100"></svg>
     </div>
 
+
+    <div class="filter-wrap">
+      <button class="filter-btn" id="filter-toggle">
+        <span class="fb-dot"></span>
+        🗂 Filtrar zona
+      </button>
+      <div class="filter-panel" id="filter-panel">
+        <div class="fp-title">
+          <span>COMUNIDADES AUTÓNOMAS</span>
+          <span class="fp-clear" id="fp-clear-ccaa">limpiar</span>
+        </div>
+        <div id="fp-ccaa-list"><div class="fp-item" data-type="ccaa" data-val="Andalucía"><input type="checkbox" id="cc_Andalucía"><label class="fp-name" for="cc_Andalucía">Andalucía</label><span class="fp-pct" id="cc_pct_Andalucía">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Andalucía" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Aragón"><input type="checkbox" id="cc_Aragón"><label class="fp-name" for="cc_Aragón">Aragón</label><span class="fp-pct" id="cc_pct_Aragón">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Aragón" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Asturias"><input type="checkbox" id="cc_Asturias"><label class="fp-name" for="cc_Asturias">Asturias</label><span class="fp-pct" id="cc_pct_Asturias">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Asturias" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="C. Valenciana"><input type="checkbox" id="cc_C_Valenciana"><label class="fp-name" for="cc_C_Valenciana">C. Valenciana</label><span class="fp-pct" id="cc_pct_C_Valenciana">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_C_Valenciana" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Canarias"><input type="checkbox" id="cc_Canarias"><label class="fp-name" for="cc_Canarias">Canarias</label><span class="fp-pct" id="cc_pct_Canarias">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Canarias" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Cantabria"><input type="checkbox" id="cc_Cantabria"><label class="fp-name" for="cc_Cantabria">Cantabria</label><span class="fp-pct" id="cc_pct_Cantabria">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Cantabria" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Castilla y León"><input type="checkbox" id="cc_Castilla_y_León"><label class="fp-name" for="cc_Castilla_y_León">Castilla y León</label><span class="fp-pct" id="cc_pct_Castilla_y_León">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Castilla_y_León" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Castilla-La Mancha"><input type="checkbox" id="cc_Castilla-La_Mancha"><label class="fp-name" for="cc_Castilla-La_Mancha">Castilla-La Mancha</label><span class="fp-pct" id="cc_pct_Castilla-La_Mancha">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Castilla-La_Mancha" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Cataluña"><input type="checkbox" id="cc_Cataluña"><label class="fp-name" for="cc_Cataluña">Cataluña</label><span class="fp-pct" id="cc_pct_Cataluña">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Cataluña" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Ceuta"><input type="checkbox" id="cc_Ceuta"><label class="fp-name" for="cc_Ceuta">Ceuta</label><span class="fp-pct" id="cc_pct_Ceuta">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Ceuta" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Extremadura"><input type="checkbox" id="cc_Extremadura"><label class="fp-name" for="cc_Extremadura">Extremadura</label><span class="fp-pct" id="cc_pct_Extremadura">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Extremadura" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Galicia"><input type="checkbox" id="cc_Galicia"><label class="fp-name" for="cc_Galicia">Galicia</label><span class="fp-pct" id="cc_pct_Galicia">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Galicia" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Illes Balears"><input type="checkbox" id="cc_Illes_Balears"><label class="fp-name" for="cc_Illes_Balears">Illes Balears</label><span class="fp-pct" id="cc_pct_Illes_Balears">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Illes_Balears" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="La Rioja"><input type="checkbox" id="cc_La_Rioja"><label class="fp-name" for="cc_La_Rioja">La Rioja</label><span class="fp-pct" id="cc_pct_La_Rioja">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_La_Rioja" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Madrid"><input type="checkbox" id="cc_Madrid"><label class="fp-name" for="cc_Madrid">Madrid</label><span class="fp-pct" id="cc_pct_Madrid">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Madrid" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Melilla"><input type="checkbox" id="cc_Melilla"><label class="fp-name" for="cc_Melilla">Melilla</label><span class="fp-pct" id="cc_pct_Melilla">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Melilla" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Murcia"><input type="checkbox" id="cc_Murcia"><label class="fp-name" for="cc_Murcia">Murcia</label><span class="fp-pct" id="cc_pct_Murcia">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Murcia" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="Navarra"><input type="checkbox" id="cc_Navarra"><label class="fp-name" for="cc_Navarra">Navarra</label><span class="fp-pct" id="cc_pct_Navarra">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_Navarra" style="width:0%"></div></div><div class="fp-item" data-type="ccaa" data-val="País Vasco"><input type="checkbox" id="cc_País_Vasco"><label class="fp-name" for="cc_País_Vasco">País Vasco</label><span class="fp-pct" id="cc_pct_País_Vasco">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="cc_bar_País_Vasco" style="width:0%"></div></div></div>
+
+        <div class="fp-title" style="margin-top:12px">
+          <span>PROVINCIAS</span>
+          <span class="fp-clear" id="fp-clear-prov">limpiar</span>
+        </div>
+        <div class="fp-section" id="fp-prov-list"><div class="fp-section-title">Andalucía</div><div class="fp-item" data-type="prov" data-val="04"><input type="checkbox" id="pv_04"><label class="fp-name" for="pv_04">Almería</label><span class="fp-pct" id="pv_pct_04">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_04" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="11"><input type="checkbox" id="pv_11"><label class="fp-name" for="pv_11">Cádiz</label><span class="fp-pct" id="pv_pct_11">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_11" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="14"><input type="checkbox" id="pv_14"><label class="fp-name" for="pv_14">Córdoba</label><span class="fp-pct" id="pv_pct_14">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_14" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="18"><input type="checkbox" id="pv_18"><label class="fp-name" for="pv_18">Granada</label><span class="fp-pct" id="pv_pct_18">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_18" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="21"><input type="checkbox" id="pv_21"><label class="fp-name" for="pv_21">Huelva</label><span class="fp-pct" id="pv_pct_21">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_21" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="23"><input type="checkbox" id="pv_23"><label class="fp-name" for="pv_23">Jaén</label><span class="fp-pct" id="pv_pct_23">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_23" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="29"><input type="checkbox" id="pv_29"><label class="fp-name" for="pv_29">Málaga</label><span class="fp-pct" id="pv_pct_29">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_29" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="41"><input type="checkbox" id="pv_41"><label class="fp-name" for="pv_41">Sevilla</label><span class="fp-pct" id="pv_pct_41">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_41" style="width:0%"></div></div><div class="fp-section-title">Aragón</div><div class="fp-item" data-type="prov" data-val="22"><input type="checkbox" id="pv_22"><label class="fp-name" for="pv_22">Huesca</label><span class="fp-pct" id="pv_pct_22">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_22" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="44"><input type="checkbox" id="pv_44"><label class="fp-name" for="pv_44">Teruel</label><span class="fp-pct" id="pv_pct_44">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_44" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="50"><input type="checkbox" id="pv_50"><label class="fp-name" for="pv_50">Zaragoza</label><span class="fp-pct" id="pv_pct_50">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_50" style="width:0%"></div></div><div class="fp-section-title">Asturias</div><div class="fp-item" data-type="prov" data-val="33"><input type="checkbox" id="pv_33"><label class="fp-name" for="pv_33">Asturias</label><span class="fp-pct" id="pv_pct_33">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_33" style="width:0%"></div></div><div class="fp-section-title">C. Valenciana</div><div class="fp-item" data-type="prov" data-val="03"><input type="checkbox" id="pv_03"><label class="fp-name" for="pv_03">Alicante</label><span class="fp-pct" id="pv_pct_03">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_03" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="12"><input type="checkbox" id="pv_12"><label class="fp-name" for="pv_12">Castellón</label><span class="fp-pct" id="pv_pct_12">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_12" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="46"><input type="checkbox" id="pv_46"><label class="fp-name" for="pv_46">Valencia</label><span class="fp-pct" id="pv_pct_46">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_46" style="width:0%"></div></div><div class="fp-section-title">Canarias</div><div class="fp-item" data-type="prov" data-val="35"><input type="checkbox" id="pv_35"><label class="fp-name" for="pv_35">Las Palmas</label><span class="fp-pct" id="pv_pct_35">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_35" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="38"><input type="checkbox" id="pv_38"><label class="fp-name" for="pv_38">S.C. Tenerife</label><span class="fp-pct" id="pv_pct_38">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_38" style="width:0%"></div></div><div class="fp-section-title">Cantabria</div><div class="fp-item" data-type="prov" data-val="39"><input type="checkbox" id="pv_39"><label class="fp-name" for="pv_39">Cantabria</label><span class="fp-pct" id="pv_pct_39">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_39" style="width:0%"></div></div><div class="fp-section-title">Castilla y León</div><div class="fp-item" data-type="prov" data-val="09"><input type="checkbox" id="pv_09"><label class="fp-name" for="pv_09">Burgos</label><span class="fp-pct" id="pv_pct_09">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_09" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="24"><input type="checkbox" id="pv_24"><label class="fp-name" for="pv_24">León</label><span class="fp-pct" id="pv_pct_24">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_24" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="34"><input type="checkbox" id="pv_34"><label class="fp-name" for="pv_34">Palencia</label><span class="fp-pct" id="pv_pct_34">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_34" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="37"><input type="checkbox" id="pv_37"><label class="fp-name" for="pv_37">Salamanca</label><span class="fp-pct" id="pv_pct_37">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_37" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="40"><input type="checkbox" id="pv_40"><label class="fp-name" for="pv_40">Segovia</label><span class="fp-pct" id="pv_pct_40">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_40" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="42"><input type="checkbox" id="pv_42"><label class="fp-name" for="pv_42">Soria</label><span class="fp-pct" id="pv_pct_42">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_42" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="47"><input type="checkbox" id="pv_47"><label class="fp-name" for="pv_47">Valladolid</label><span class="fp-pct" id="pv_pct_47">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_47" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="49"><input type="checkbox" id="pv_49"><label class="fp-name" for="pv_49">Zamora</label><span class="fp-pct" id="pv_pct_49">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_49" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="05"><input type="checkbox" id="pv_05"><label class="fp-name" for="pv_05">Ávila</label><span class="fp-pct" id="pv_pct_05">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_05" style="width:0%"></div></div><div class="fp-section-title">Castilla-La Mancha</div><div class="fp-item" data-type="prov" data-val="02"><input type="checkbox" id="pv_02"><label class="fp-name" for="pv_02">Albacete</label><span class="fp-pct" id="pv_pct_02">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_02" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="13"><input type="checkbox" id="pv_13"><label class="fp-name" for="pv_13">Ciudad Real</label><span class="fp-pct" id="pv_pct_13">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_13" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="16"><input type="checkbox" id="pv_16"><label class="fp-name" for="pv_16">Cuenca</label><span class="fp-pct" id="pv_pct_16">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_16" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="19"><input type="checkbox" id="pv_19"><label class="fp-name" for="pv_19">Guadalajara</label><span class="fp-pct" id="pv_pct_19">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_19" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="45"><input type="checkbox" id="pv_45"><label class="fp-name" for="pv_45">Toledo</label><span class="fp-pct" id="pv_pct_45">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_45" style="width:0%"></div></div><div class="fp-section-title">Cataluña</div><div class="fp-item" data-type="prov" data-val="08"><input type="checkbox" id="pv_08"><label class="fp-name" for="pv_08">Barcelona</label><span class="fp-pct" id="pv_pct_08">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_08" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="17"><input type="checkbox" id="pv_17"><label class="fp-name" for="pv_17">Girona</label><span class="fp-pct" id="pv_pct_17">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_17" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="25"><input type="checkbox" id="pv_25"><label class="fp-name" for="pv_25">Lleida</label><span class="fp-pct" id="pv_pct_25">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_25" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="43"><input type="checkbox" id="pv_43"><label class="fp-name" for="pv_43">Tarragona</label><span class="fp-pct" id="pv_pct_43">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_43" style="width:0%"></div></div><div class="fp-section-title">Ceuta</div><div class="fp-item" data-type="prov" data-val="51"><input type="checkbox" id="pv_51"><label class="fp-name" for="pv_51">Ceuta</label><span class="fp-pct" id="pv_pct_51">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_51" style="width:0%"></div></div><div class="fp-section-title">Extremadura</div><div class="fp-item" data-type="prov" data-val="06"><input type="checkbox" id="pv_06"><label class="fp-name" for="pv_06">Badajoz</label><span class="fp-pct" id="pv_pct_06">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_06" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="10"><input type="checkbox" id="pv_10"><label class="fp-name" for="pv_10">Cáceres</label><span class="fp-pct" id="pv_pct_10">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_10" style="width:0%"></div></div><div class="fp-section-title">Galicia</div><div class="fp-item" data-type="prov" data-val="15"><input type="checkbox" id="pv_15"><label class="fp-name" for="pv_15">A Coruña</label><span class="fp-pct" id="pv_pct_15">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_15" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="27"><input type="checkbox" id="pv_27"><label class="fp-name" for="pv_27">Lugo</label><span class="fp-pct" id="pv_pct_27">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_27" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="32"><input type="checkbox" id="pv_32"><label class="fp-name" for="pv_32">Ourense</label><span class="fp-pct" id="pv_pct_32">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_32" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="36"><input type="checkbox" id="pv_36"><label class="fp-name" for="pv_36">Pontevedra</label><span class="fp-pct" id="pv_pct_36">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_36" style="width:0%"></div></div><div class="fp-section-title">Illes Balears</div><div class="fp-item" data-type="prov" data-val="07"><input type="checkbox" id="pv_07"><label class="fp-name" for="pv_07">Illes Balears</label><span class="fp-pct" id="pv_pct_07">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_07" style="width:0%"></div></div><div class="fp-section-title">La Rioja</div><div class="fp-item" data-type="prov" data-val="26"><input type="checkbox" id="pv_26"><label class="fp-name" for="pv_26">La Rioja</label><span class="fp-pct" id="pv_pct_26">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_26" style="width:0%"></div></div><div class="fp-section-title">Madrid</div><div class="fp-item" data-type="prov" data-val="28"><input type="checkbox" id="pv_28"><label class="fp-name" for="pv_28">Madrid</label><span class="fp-pct" id="pv_pct_28">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_28" style="width:0%"></div></div><div class="fp-section-title">Melilla</div><div class="fp-item" data-type="prov" data-val="52"><input type="checkbox" id="pv_52"><label class="fp-name" for="pv_52">Melilla</label><span class="fp-pct" id="pv_pct_52">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_52" style="width:0%"></div></div><div class="fp-section-title">Murcia</div><div class="fp-item" data-type="prov" data-val="30"><input type="checkbox" id="pv_30"><label class="fp-name" for="pv_30">Murcia</label><span class="fp-pct" id="pv_pct_30">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_30" style="width:0%"></div></div><div class="fp-section-title">Navarra</div><div class="fp-item" data-type="prov" data-val="31"><input type="checkbox" id="pv_31"><label class="fp-name" for="pv_31">Navarra</label><span class="fp-pct" id="pv_pct_31">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_31" style="width:0%"></div></div><div class="fp-section-title">País Vasco</div><div class="fp-item" data-type="prov" data-val="48"><input type="checkbox" id="pv_48"><label class="fp-name" for="pv_48">Bizkaia</label><span class="fp-pct" id="pv_pct_48">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_48" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="20"><input type="checkbox" id="pv_20"><label class="fp-name" for="pv_20">Gipuzkoa</label><span class="fp-pct" id="pv_pct_20">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_20" style="width:0%"></div></div><div class="fp-item" data-type="prov" data-val="01"><input type="checkbox" id="pv_01"><label class="fp-name" for="pv_01">Álava</label><span class="fp-pct" id="pv_pct_01">0%</span></div><div class="fp-bar"><div class="fp-bar-fill" id="pv_bar_01" style="width:0%"></div></div></div>
+      </div>
+    </div>
     <div class="zoom-ctrls">
       <button class="zoom-btn" id="z-in"  title="Zoom +">+</button>
       <button class="zoom-btn" id="z-out" title="Zoom −">−</button>
@@ -315,17 +382,25 @@ GEO.features.forEach((f,i)=>{
   if(!nameIdx.has(k)) nameIdx.set(k,[]);
   nameIdx.get(k).push(i);
 
-  // Si tiene "/" indexar también cada parte por separado
+  // Si tiene "/" o "-" (bilingüe) indexar también cada parte por separado
   // ej. "Castellón de la Plana/Castelló de la Plana" -> acepta "castellon" y "castello"
-  if(n.includes('/')){
-    n.split('/').forEach(part => {
+  // ej. "Maó-Mahón" -> acepta "mao" y "mahon"
+  // ej. "Vitoria-Gasteiz" -> acepta "vitoria" y "gasteiz"
+  const BILINGUAL_PROVS = new Set(['07','03','12','46','17','25','43','08','20','48','01','31','32','27','15','36']);
+  const prov2 = (f.properties.c||'').slice(0,2);
+  const separators = [];
+  if(n.includes('/')) separators.push('/');
+  if(n.includes('-') && BILINGUAL_PROVS.has(prov2)) separators.push('-');
+
+  separators.forEach(sep => {
+    n.split(sep).forEach(part => {
       const pk = norm(part.trim());
       if(pk.length < 2) return;
       if(!nameIdx.has(pk)) nameIdx.set(pk,[]);
       const arr = nameIdx.get(pk);
       if(!arr.includes(i)) arr.push(i);
     });
-  }
+  });
 });
 // autocomplete removed
 
@@ -573,6 +648,7 @@ function updateStats(){
   document.getElementById('pop-lbl').textContent=ppct+'%';
   document.getElementById('muni-bar').style.width=pct+'%';
   document.getElementById('pop-bar').style.width=ppct+'%';
+  updateFilterBars();
 }
 
 function updateStreak(){
@@ -834,6 +910,135 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
 });
 
 
+
+// ── Filtro Provincia / CCAA ────────────────────────────────────────────
+const PROV_CCAA = {"01": "País Vasco", "02": "Castilla-La Mancha", "03": "C. Valenciana", "04": "Andalucía", "05": "Castilla y León", "06": "Extremadura", "07": "Illes Balears", "08": "Cataluña", "09": "Castilla y León", "10": "Extremadura", "11": "Andalucía", "12": "C. Valenciana", "13": "Castilla-La Mancha", "14": "Andalucía", "15": "Galicia", "16": "Castilla-La Mancha", "17": "Cataluña", "18": "Andalucía", "19": "Castilla-La Mancha", "20": "País Vasco", "21": "Andalucía", "22": "Aragón", "23": "Andalucía", "24": "Castilla y León", "25": "Cataluña", "26": "La Rioja", "27": "Galicia", "28": "Madrid", "29": "Andalucía", "30": "Murcia", "31": "Navarra", "32": "Galicia", "33": "Asturias", "34": "Castilla y León", "35": "Canarias", "36": "Galicia", "37": "Castilla y León", "38": "Canarias", "39": "Cantabria", "40": "Castilla y León", "41": "Andalucía", "42": "Castilla y León", "43": "Cataluña", "44": "Aragón", "45": "Castilla-La Mancha", "46": "C. Valenciana", "47": "Castilla y León", "48": "País Vasco", "49": "Castilla y León", "50": "Aragón", "51": "Ceuta", "52": "Melilla", "53": "Navarra"};
+const PROV_NAMES = {"01": "Álava", "02": "Albacete", "03": "Alicante", "04": "Almería", "05": "Ávila", "06": "Badajoz", "07": "Illes Balears", "08": "Barcelona", "09": "Burgos", "10": "Cáceres", "11": "Cádiz", "12": "Castellón", "13": "Ciudad Real", "14": "Córdoba", "15": "A Coruña", "16": "Cuenca", "17": "Girona", "18": "Granada", "19": "Guadalajara", "20": "Gipuzkoa", "21": "Huelva", "22": "Huesca", "23": "Jaén", "24": "León", "25": "Lleida", "26": "La Rioja", "27": "Lugo", "28": "Madrid", "29": "Málaga", "30": "Murcia", "31": "Navarra", "32": "Ourense", "33": "Asturias", "34": "Palencia", "35": "Las Palmas", "36": "Pontevedra", "37": "Salamanca", "38": "S.C. Tenerife", "39": "Cantabria", "40": "Segovia", "41": "Sevilla", "42": "Soria", "43": "Tarragona", "44": "Teruel", "45": "Toledo", "46": "Valencia", "47": "Valladolid", "48": "Bizkaia", "49": "Zamora", "50": "Zaragoza", "51": "Ceuta", "52": "Melilla"};
+
+// Precalcular totales por provincia y CCAA
+const provTotal = {};   // prov_code -> {munis, pop}
+const ccaaTotal = {};   // ccaa_name -> {munis, pop}
+
+GEO.features.forEach(f => {
+  const prov = (f.properties.c||'').slice(0,2);
+  const ccaa = PROV_CCAA[prov] || 'Otras';
+  const pop = f.properties.p || 0;
+  if(!provTotal[prov]) provTotal[prov] = {munis:0, pop:0};
+  provTotal[prov].munis++;
+  provTotal[prov].pop += pop;
+  if(!ccaaTotal[ccaa]) ccaaTotal[ccaa] = {munis:0, pop:0};
+  ccaaTotal[ccaa].munis++;
+  ccaaTotal[ccaa].pop += pop;
+});
+
+// Estado del filtro
+let activeFilter = {type: null, vals: new Set()}; // type: 'prov'|'ccaa'|null
+
+// Toggle panel
+document.getElementById('filter-toggle').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('filter-panel').classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  if(!e.target.closest('.filter-wrap'))
+    document.getElementById('filter-panel').classList.remove('open');
+});
+
+// Checkbox listeners
+document.querySelectorAll('.fp-item input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const item = cb.closest('.fp-item');
+    const type = item.dataset.type;
+    const val  = item.dataset.val;
+    if(cb.checked) {
+      activeFilter.vals.add(val);
+      activeFilter.type = type;
+      // Si cambias de tipo, limpia el otro
+      document.querySelectorAll(`.fp-item[data-type="${type === 'prov' ? 'ccaa' : 'prov'}"] input`).forEach(x => { x.checked = false; });
+      activeFilter.vals = new Set([...document.querySelectorAll(`.fp-item[data-type="${type}"] input:checked`)].map(x => x.closest('.fp-item').dataset.val));
+    } else {
+      activeFilter.vals.delete(val);
+      if(activeFilter.vals.size === 0) activeFilter.type = null;
+    }
+    applyFilterHighlight();
+    updateFilterBars();
+  });
+});
+
+document.getElementById('fp-clear-ccaa').addEventListener('click', () => {
+  document.querySelectorAll('.fp-item[data-type="ccaa"] input').forEach(x => x.checked = false);
+  if(activeFilter.type === 'ccaa') { activeFilter.vals.clear(); activeFilter.type = null; }
+  applyFilterHighlight(); updateFilterBars();
+});
+document.getElementById('fp-clear-prov').addEventListener('click', () => {
+  document.querySelectorAll('.fp-item[data-type="prov"] input').forEach(x => x.checked = false);
+  if(activeFilter.type === 'prov') { activeFilter.vals.clear(); activeFilter.type = null; }
+  applyFilterHighlight(); updateFilterBars();
+});
+
+function featMatchesFilter(f) {
+  if(!activeFilter.type || activeFilter.vals.size === 0) return true;
+  const prov = (f.properties.c||'').slice(0,2);
+  if(activeFilter.type === 'prov') return activeFilter.vals.has(prov);
+  if(activeFilter.type === 'ccaa') return activeFilter.vals.has(PROV_CCAA[prov]);
+  return true;
+}
+
+function applyFilterHighlight() {
+  const hasFilter = activeFilter.type && activeFilter.vals.size > 0;
+  document.getElementById('filter-toggle').classList.toggle('active', hasFilter);
+
+  GEO.features.forEach((f, i) => {
+    const p = pathEls[i];
+    if(!p) return;
+    const matches = featMatchesFilter(f);
+    p.style.opacity = hasFilter && !matches ? '0.18' : '1';
+  });
+}
+
+function updateFilterBars() {
+  // Calcular encontrados por provincia y CCAA
+  const provFound = {};
+  const ccaaFound = {};
+  foundIdx.forEach(i => {
+    const f = GEO.features[i];
+    const prov = (f.properties.c||'').slice(0,2);
+    const ccaa = PROV_CCAA[prov] || 'Otras';
+    if(!provFound[prov]) provFound[prov] = {munis:0, pop:0};
+    provFound[prov].munis++;
+    provFound[prov].pop += f.properties.p||0;
+    if(!ccaaFound[ccaa]) ccaaFound[ccaa] = {munis:0, pop:0};
+    ccaaFound[ccaa].munis++;
+    ccaaFound[ccaa].pop += f.properties.p||0;
+  });
+
+  // Update CCAA bars
+  Object.entries(ccaaTotal).forEach(([ccaa, tot]) => {
+    const found = ccaaFound[ccaa] || {munis:0};
+    const pct = tot.munis > 0 ? (found.munis / tot.munis * 100) : 0;
+    const ccaa_id = ccaa.replace(/ /g,'_').replace(/\./g,'');
+    const pctEl = document.getElementById('cc_pct_' + ccaa_id);
+    const barEl = document.getElementById('cc_bar_' + ccaa_id);
+    if(pctEl) pctEl.textContent = pct.toFixed(0) + '%';
+    if(barEl) {
+      barEl.style.width = pct + '%';
+      barEl.classList.toggle('partial', pct > 0 && pct < 100);
+    }
+  });
+
+  // Update prov bars
+  Object.entries(provTotal).forEach(([prov, tot]) => {
+    const found = provFound[prov] || {munis:0};
+    const pct = tot.munis > 0 ? (found.munis / tot.munis * 100) : 0;
+    const pctEl = document.getElementById('pv_pct_' + prov);
+    const barEl = document.getElementById('pv_bar_' + prov);
+    if(pctEl) pctEl.textContent = pct.toFixed(0) + '%';
+    if(barEl) {
+      barEl.style.width = pct + '%';
+      barEl.classList.toggle('partial', pct > 0 && pct < 100);
+    }
+  });
+}
 // ── Zoom & Pan ─────────────────────────────────────────────────────────
 let zScale=1, zX=0, zY=0;
 let isDragging=false, dragStartX=0, dragStartY=0, dragZX=0, dragZY=0;
