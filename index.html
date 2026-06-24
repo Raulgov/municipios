@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Municipios de España</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a1628;--surface:#0f1f38;--surface2:#182d4a;--surface3:#1e3660;
-  --accent:#e8b84b;--green:#3ecf78;--red:#e85f5f;--blue:#4a9eff;
-  --text:#dce8f5;--muted:#6a8fad;--border:rgba(80,140,210,0.18);
-  --map-empty:#0e1e35;--map-border:#1a3050;
-  --font:'Space Grotesk',sans-serif;--mono:'Space Mono',monospace;
+  --bg:#13100e;--surface:#1c1713;--surface2:#251f19;--surface3:#2e2620;
+  --accent:#e05c3a;--green:#4dc98a;--red:#e05c3a;--blue:#5aafea;
+  --text:#ede8e0;--muted:#8a7f74;--border:rgba(180,140,100,0.14);
+  --map-empty:#161210;--map-border:#2a2018;
+  --font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
 }
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:var(--font);display:flex;flex-direction:column}
@@ -23,7 +23,7 @@ header{
   background:var(--surface);flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;gap:16px;
 }
-.title h1{font-size:1rem;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.title h1{font-size:.95rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .title p{font-size:.65rem;color:var(--muted);font-family:var(--mono);margin-top:1px}
 
 .stats{display:flex;gap:12px;align-items:center;flex-shrink:0}
@@ -34,16 +34,16 @@ header{
 .bars{display:flex;flex-direction:column;gap:5px;min-width:160px}
 .bar-row{display:flex;flex-direction:column;gap:2px}
 .bar-lbl{font-size:.58rem;color:var(--muted);display:flex;justify-content:space-between;font-family:var(--mono)}
-.bar-track{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.bar-track{height:5px;background:var(--surface2);border-radius:2px;overflow:hidden}
 .bar-fill{height:100%;border-radius:3px;transition:width .5s ease;width:0%}
-#muni-bar{background:linear-gradient(90deg,#3ecf78,#4a9eff)}
-#pop-bar{background:linear-gradient(90deg,#e8b84b,#ff7b4a)}
+#muni-bar{background:linear-gradient(90deg,#4dc98a,#5aafea)}
+#pop-bar{background:linear-gradient(90deg,#e05c3a,#f0a060)}
 
 .streak-badge{
-  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   padding:4px 10px;text-align:center;flex-shrink:0;
 }
-.streak-badge .v{font-family:var(--mono);font-size:1.1rem;color:#ff9f40;font-weight:700}
+.streak-badge .v{font-family:var(--mono);font-size:1.1rem;color:var(--accent);font-weight:700}
 .streak-badge .l{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 
 /* ── MAIN ── */
@@ -65,7 +65,7 @@ header{
 .inset{
   position:absolute;bottom:10px;left:10px;
   background:rgba(8,16,28,.9);border:1px solid var(--border);
-  border-radius:6px;padding:4px;backdrop-filter:blur(4px);
+  border-radius:3px;padding:4px;backdrop-filter:blur(4px);
 }
 .inset-label{font-size:.55rem;color:var(--muted);font-family:var(--mono);
   text-align:center;padding:2px 0 3px;letter-spacing:.05em}
@@ -73,9 +73,9 @@ header{
 
 /* Tooltip */
 #tip{
-  position:absolute;background:var(--surface);border:1px solid var(--accent);
+  position:absolute;background:var(--surface);border:1px solid rgba(224,92,58,.6);
   color:var(--text);font-family:var(--mono);font-size:.7rem;
-  padding:4px 9px;border-radius:4px;pointer-events:none;
+  padding:4px 9px;border-radius:2px;pointer-events:none;
   opacity:0;transition:opacity .12s;white-space:nowrap;z-index:20;
   max-width:220px;
 }
@@ -95,7 +95,7 @@ header{
 .inp-wrap{position:relative}
 #inp{
   width:100%;background:var(--surface2);border:1.5px solid var(--border);
-  border-radius:6px;color:var(--text);font-family:var(--font);
+  border-radius:3px;color:var(--text);font-family:var(--font);
   font-size:.9rem;padding:8px 11px;outline:none;
   transition:border-color .2s,box-shadow .2s;
 }
@@ -115,7 +115,7 @@ header{
 .hint-btn{
   flex:1;background:var(--surface2);border:1px solid var(--border);
   color:var(--muted);font-family:var(--mono);font-size:.6rem;
-  padding:5px 8px;border-radius:5px;cursor:pointer;
+  padding:5px 8px;border-radius:3px;cursor:pointer;
   transition:all .2s;text-align:center;letter-spacing:.03em;
 }
 .hint-btn:hover{border-color:var(--blue);color:var(--blue)}
@@ -157,7 +157,7 @@ header{
 /* Milestones */
 .milestone-tab{padding:10px 14px}
 .ms-item{
-  padding:7px 10px;border-radius:6px;border:1px solid var(--border);
+  padding:7px 10px;border-radius:3px;border:1px solid var(--border);
   margin-bottom:6px;display:flex;align-items:center;gap:8px;font-size:.75rem;
 }
 .ms-item.done{border-color:var(--green);background:rgba(62,207,120,.06)}
@@ -168,12 +168,13 @@ header{
 
 /* Bottom bar */
 .bottom-bar{
-  padding:8px 14px;border-top:1px solid var(--border);flex-shrink:0;
-  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 10px;border-top:1px solid var(--border);flex-shrink:0;
+  display:flex;justify-content:space-between;align-items:center;gap:5px;
 }
+.bottom-bar .btn-sm{flex:1;text-align:center;padding:4px 4px;}
 .btn-sm{
   background:none;border:1px solid var(--border);color:var(--muted);
-  font-family:var(--mono);font-size:.6rem;padding:4px 9px;border-radius:4px;
+  font-family:var(--mono);font-size:.6rem;padding:4px 9px;border-radius:2px;
   cursor:pointer;transition:all .2s;
 }
 .btn-sm:hover{border-color:var(--red);color:var(--red)}
@@ -204,8 +205,8 @@ header{
 
 <header>
   <div class="title">
-    <h1>🗺️ Adivina los municipios de España</h1>
-    <p id="sub-txt">¿Cuánto conoces el territorio?</p>
+    <h1>Municipios de España</h1>
+    <p id="sub-txt">¿Cuántos conoces?</p>
   </div>
   <div class="bars">
     <div class="bar-row">
@@ -255,7 +256,7 @@ header{
     <div class="inp-section">
       <div class="inp-lbl">Escribe un municipio</div>
       <div class="inp-wrap">
-        <input id="inp" type="text" placeholder="Madrid, Gijón, Úbeda…" autocomplete="off" spellcheck="false">
+        <input id="inp" type="text" placeholder="escribe un municipio…" autocomplete="off" spellcheck="false">
       </div>
       <div class="flash" id="flash"></div>
     </div>
@@ -282,8 +283,10 @@ header{
     </div>
 
     <div class="bottom-bar">
-      <button class="btn-sm blue" id="btn-export">📋 Copiar lista</button>
+      <button class="btn-sm blue" id="btn-save">💾 Guardar</button>
+      <button class="btn-sm blue" id="btn-load">📂 Cargar</button>
       <button class="btn-sm" id="btn-reset">🔄 Reiniciar</button>
+      <input type="file" id="file-input" accept=".json" style="display:none">
     </div>
   </div>
 </div>
@@ -306,9 +309,23 @@ const allNames = [];
 GEO.features.forEach((f,i)=>{
   const n = f.properties.n;
   allNames.push(n);
+
+  // Nombre completo
   const k = norm(n);
   if(!nameIdx.has(k)) nameIdx.set(k,[]);
   nameIdx.get(k).push(i);
+
+  // Si tiene "/" indexar también cada parte por separado
+  // ej. "Castellón de la Plana/Castelló de la Plana" -> acepta "castellon" y "castello"
+  if(n.includes('/')){
+    n.split('/').forEach(part => {
+      const pk = norm(part.trim());
+      if(pk.length < 2) return;
+      if(!nameIdx.has(pk)) nameIdx.set(pk,[]);
+      const arr = nameIdx.get(pk);
+      if(!arr.includes(i)) arr.push(i);
+    });
+  }
 });
 // autocomplete removed
 
@@ -714,10 +731,95 @@ document.querySelectorAll('.tab').forEach(t=>{
 });
 
 // ── Export ─────────────────────────────────────────────────────────────
-document.getElementById('btn-export').addEventListener('click',()=>{
-  const names=[...foundNorm].map(k=>nameIdx.get(k)).flat()
-    .map(i=>GEO.features[i].properties.n).sort();
-  navigator.clipboard.writeText(names.join('\n')).then(()=>flash('Lista copiada al portapapeles','ok'));
+// ── Guardar / Cargar partida ───────────────────────────────────────────
+document.getElementById('btn-save').addEventListener('click', () => {
+  const state = {
+    version: 1,
+    date: new Date().toISOString(),
+    found: [...foundIdx].map(i => GEO.features[i].properties.c), // CODIGOINE codes
+    hintsUsed,
+    streak,
+  };
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const dateStr = new Date().toISOString().slice(0,10);
+  a.download = `municipios_${dateStr}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  flash('✓ Partida guardada', 'ok');
+});
+
+document.getElementById('btn-load').addEventListener('click', () => {
+  document.getElementById('file-input').click();
+});
+
+document.getElementById('file-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    try {
+      const state = JSON.parse(evt.target.result);
+      if (!state.found || !Array.isArray(state.found)) throw new Error('Formato inválido');
+
+      // Build reverse index: CODIGOINE -> feature indices
+      const codeToIdx = new Map();
+      GEO.features.forEach((f, i) => {
+        const c = f.properties.c;
+        if (!codeToIdx.has(c)) codeToIdx.set(c, []);
+        codeToIdx.get(c).push(i);
+      });
+
+      // Reset state
+      foundIdx.clear(); foundNorm.clear(); totalPopFound = 0;
+      pathEls.forEach(p => { if(p){ p.style.fill=''; p.style.stroke=''; p.style.filter=''; }});
+      tabFound.innerHTML='';
+
+      // Restore found municipalities
+      let restored = 0;
+      state.found.forEach(code => {
+        const idxs = codeToIdx.get(code);
+        if (!idxs) return;
+        idxs.forEach(i => {
+          if (foundIdx.has(i)) return;
+          foundIdx.add(i);
+          const pop = GEO.features[i].properties.p;
+          totalPopFound += pop;
+          foundNorm.add(norm(GEO.features[i].properties.n));
+          if (pathEls[i]) {
+            pathEls[i].style.fill = popColor(pop);
+            pathEls[i].style.stroke = 'rgba(0,0,0,.3)';
+          }
+        });
+        restored++;
+      });
+
+      // Rebuild found list (most recent first, so reverse)
+      const foundNames = [...foundNorm].map(k => {
+        const idxs = nameIdx.get(k);
+        if (!idxs) return null;
+        const f = GEO.features[idxs[0]];
+        return { name: f.properties.n, pop: f.properties.p, cnt: idxs.length };
+      }).filter(Boolean);
+      foundNames.forEach(({name, pop, cnt}) => addFoundItem(name, pop, cnt));
+
+      hintsUsed = state.hintsUsed || 0;
+      streak = state.streak || 0;
+      document.getElementById('hint-count').textContent = `Pistas usadas: ${hintsUsed}`;
+      updateStats(); updateStreak(); buildRankTab(); buildMsTab();
+      doneMs.clear(); checkMilestones();
+
+      const dateStr = state.date ? ' ('+state.date.slice(0,10)+')' : '';
+      flash(`✓ Partida cargada${dateStr} — ${restored} municipios`, 'ok');
+    } catch(err) {
+      flash('Error al cargar el archivo', 'err');
+    }
+    // Reset input so same file can be loaded again
+    e.target.value = '';
+  };
+  reader.readAsText(file);
 });
 
 // ── Reset ──────────────────────────────────────────────────────────────
